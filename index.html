@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal d'Incidències Informàtiques</title>
+    
+    <!-- Configuración para PWA / Web App -->
+    <meta name="theme-color" content="#1e40af">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Incidències">
+    
+    <!-- Iconos para iOS / Safari / Android -->
+    <link rel="apple-touch-icon" href="servicio.png">
+    <link rel="icon" type="image/png" href="servicio.png">
+    
+    <!-- Enlace al Manifest estático -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .fade-in {
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        html, body {
+            overscroll-behavior-y: contain;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 relative">
+
+    <!-- BANNER DE INSTALACIÓN PWA -->
+    <div id="install-banner" class="hidden fixed top-4 left-4 right-4 max-w-lg mx-auto z-50 bg-white/95 backdrop-blur border border-blue-200 rounded-2xl shadow-2xl p-4 flex items-center justify-between gap-3 fade-in">
+        <div class="flex items-center gap-3">
+            <img src="servicio.png" alt="App Icon" class="w-12 h-12 rounded-xl object-cover shadow-sm">
+            <div>
+                <h3 class="text-sm font-bold text-gray-800">Instal·lar l'Aplicació</h3>
+                <p id="install-instructions" class="text-xs text-gray-500">Accedeix ràpidament des de la pantalla d'inici.</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <button id="btn-install" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs py-2.5 px-4 rounded-xl shadow transition-all">
+                Instal·lar
+            </button>
+            <button id="btn-dismiss" class="text-gray-400 hover:text-gray-600 p-1">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Background decorativo -->
+    <div class="fixed inset-0 z-0 bg-gradient-to-br from-blue-900 to-blue-700 opacity-90"></div>
+    <div class="fixed inset-0 z-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+
+    <!-- Contenedor Principal -->
+    <div class="relative z-10 w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden fade-in">
+        
+        <!-- Franja superior -->
+        <div class="h-2 bg-blue-500 w-full"></div>
+
+        <div class="p-8">
+            
+            <!-- SECCIÓN 1: IDENTIFICACIÓN DEL CENTRO -->
+            <div id="section-login" class="block">
+                <div class="text-center mb-8">
+                    <div class="mx-auto bg-blue-100 w-20 h-20 rounded-2xl flex items-center justify-center mb-4 text-blue-600 overflow-hidden shadow-inner">
+                        <img src="servicio.png" alt="Logo" class="w-full h-full object-cover" onerror="this.style.display='none'; document.getElementById('fallback-icon').style.display='flex';">
+                        <div id="fallback-icon" class="hidden w-full h-full items-center justify-center">
+                            <i data-lucide="monitor-wrench" class="w-10 h-10"></i>
+                        </div>
+                    </div>
+                    <h1 class="text-2xl font-bold text-gray-800 tracking-tight">INCIDÈNCIES INFORMÀTIQUES</h1>
+                    <p class="text-gray-500 mt-2 text-sm">Introduïu el codi del vostre centre per continuar.</p>
+                </div>
+
+                <form id="login-form" class="space-y-6">
+                    <div>
+                        <label for="center-code" class="block text-sm font-semibold text-gray-700 mb-1">NÚMERO DE CENTRE</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                <i data-lucide="building" class="w-5 h-5"></i>
+                            </div>
+                            <input type="text" id="center-code" name="center-code" placeholder="Ex: 08001595" 
+                                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-gray-800"
+                                required autocomplete="off">
+                        </div>
+                        <p id="error-message" class="text-red-500 text-sm mt-2 hidden font-medium flex items-center gap-1">
+                            <i data-lucide="alert-circle" class="w-4 h-4"></i> Codi de centre no vàlid.
+                        </p>
+                    </div>
+
+                    <button type="submit" 
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all flex justify-center items-center gap-2">
+                        <span>Accedir al Formulari</span>
+                        <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- SECCIÓN 2: FORMULARIO DE INCIDENCIA -->
+            <div id="section-form" class="hidden">
+                <div class="mb-6 border-b border-gray-100 pb-4 flex items-start gap-4">
+                    <button type="button" id="btn-back" class="text-gray-400 hover:text-blue-600 transition-colors mt-1" title="Tornar">
+                        <i data-lucide="arrow-left" class="w-6 h-6"></i>
+                    </button>
+                    <div>
+                        <h2 id="center-name-display" class="text-xl font-bold text-gray-800 leading-tight">Nom del Centre</h2>
+                        <p class="text-blue-600 text-sm font-medium flex items-center gap-1 mt-1">
+                            <i data-lucide="clipboard-list" class="w-4 h-4"></i> Registre de nova incidència
+                        </p>
+                    </div>
+                </div>
+
+                <form id="incident-form" class="space-y-4">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="docent" class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">Docent</label>
+                            <input type="text" id="docent" name="docent" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm text-gray-800 bg-gray-50">
+                        </div>
+
+                        <div>
+                            <label for="aula" class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">Aula</label>
+                            <input type="text" id="aula" name="aula" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm text-gray-800 bg-gray-50">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="sace" class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">SACE</label>
+                            <input type="text" id="sace" name="sace" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm text-gray-800 bg-gray-50">
+                        </div>
+
+                        <div>
+                            <label for="email" class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">E-Mail</label>
+                            <input type="email" id="email" name="email" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm text-gray-800 bg-gray-50">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="problema" class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1 flex justify-between">
+                            <span>Problema Trobat</span>
+                        </label>
+                        <textarea id="problema" name="problema" rows="4" required
+                            placeholder="Descriviu el problema detalladament..."
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm text-gray-800 bg-gray-50 resize-none"></textarea>
+                        <p class="text-xs text-orange-600 mt-1 font-medium italic flex items-center gap-1">
+                            <i data-lucide="info" class="w-3 h-3"></i> No s'hi val posar només "NO FUNCIONA", cal explicar-ho.
+                        </p>
+                    </div>
+                    
+                    <p id="form-error" class="text-red-500 text-sm hidden font-medium"></p>
+
+                    <button type="submit" 
+                        class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all flex justify-center items-center gap-2">
+                        <i data-lucide="send" class="w-5 h-5"></i>
+                        <span>Generar Correu d'Incidència</span>
+                    </button>
+                    
+                    <p class="text-center text-xs text-gray-400 mt-3">S'intentarà obrir Gmail web. Si no teniu compte, s'obrirà el vostre client per defecte.</p>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer Copyright -->
+    <div class="absolute bottom-4 w-full text-center z-10 pointer-events-none">
+        <p class="text-white/70 text-xs font-medium tracking-wide">(C)opyright 2026 by REVISIO PREVENTIU</p>
+    </div>
+
+    <!-- Scripts de Lógica y PWA -->
+    <script>
+        lucide.createIcons();
+
+        // --- REGISTRO Y RECARGA AUTOMÁTICA DEL SERVICE WORKER ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then((reg) => {
+                    // Verificar cambios en el Service Worker
+                    reg.onupdatefound = () => {
+                        const installingWorker = reg.installing;
+                        installingWorker.onstatechange = () => {
+                            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                // Recargar la página automáticamente cuando hay cambios nuevos
+                                window.location.reload();
+                            }
+                        };
+                    };
+                }).catch(err => console.error("Error al registrar SW:", err));
+            });
+        }
+
+        // --- GESTIÓN DEL BANNER DE INSTALACIÓN ---
+        let deferredPrompt = null;
+        const installBanner = document.getElementById('install-banner');
+        const btnInstall = document.getElementById('btn-install');
+        const btnDismiss = document.getElementById('btn-dismiss');
+        const installInstructions = document.getElementById('install-instructions');
+
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+        if (!isStandalone) {
+            if (isIOS) {
+                // En iOS/iPhone/iPad, se muestran las instrucciones de instalación manual de Safari
+                installInstructions.textContent = "Toca 'Compartir' i després 'Afegir a la pantalla d'inici'.";
+                btnInstall.style.display = 'none';
+                installBanner.classList.remove('hidden');
+            } else {
+                // En Android, Windows y Chrome/Edge
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    e.preventDefault();
+                    deferredPrompt = e;
+                    installBanner.classList.remove('hidden');
+                });
+            }
+        }
+
+        btnInstall.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    installBanner.classList.add('hidden');
+                }
+                deferredPrompt = null;
+            }
+        });
+
+        btnDismiss.addEventListener('click', () => {
+            installBanner.classList.add('hidden');
+        });
+
+        // --- LÓGICA DE LA APLICACIÓN ---
+        const centresData = {
+            "08001595": "Escola Àngel Baixeras",
+            "08001601": "Escola Parc de la Ciutadella",
+            "08001868": "Escola Rubén Darío",
+            "08013238": "Institut Verdaguer",
+            "08033501": "Escola Antoni Brusi",
+            "08034709": "Institut Narcís Monturiol",
+            "08037814": "Escola Alexandre Galí",
+            "08052785": "Escola Vila Olímpica",
+            "08054903": "Escola Mediterrània",
+            "08055002": "CFA Barri Gòtic",
+            "08055683": "CFA Manuel Sacristán",
+            "08058775": "INST Front Marítim",
+            "08061701": "CFA Maria Rubies",
+            "08061907": "CFA Barceloneta",
+            "08064167": "Escola Sant Martí",
+            "08065202": "CFA Francesc Layret",
+            "08066565": "Institut el Joncar",
+            "08078385": "Institut de TIC de Barcelona",
+            "08078403": "Inst. de Tècn. Audiovisuals i de l'Espectacle de BCN",
+            "08911547": "Inst. Cesire"
+        };
+
+        const sectionLogin = document.getElementById('section-login');
+        const sectionForm = document.getElementById('section-form');
+        const loginForm = document.getElementById('login-form');
+        const incidentForm = document.getElementById('incident-form');
+        const inputCode = document.getElementById('center-code');
+        const errorMessage = document.getElementById('error-message');
+        const centerNameDisplay = document.getElementById('center-name-display');
+        const btnBack = document.getElementById('btn-back');
+        const formError = document.getElementById('form-error');
+        
+        let currentCenterCode = "";
+        let currentCenterName = "";
+
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const code = inputCode.value.trim();
+            if (centresData[code]) {
+                currentCenterCode = code;
+                currentCenterName = centresData[code];
+                errorMessage.classList.add('hidden');
+                inputCode.classList.remove('border-red-500');
+                centerNameDisplay.textContent = currentCenterName;
+                sectionLogin.classList.add('hidden');
+                sectionForm.classList.remove('hidden');
+                sectionForm.classList.add('fade-in');
+            } else {
+                errorMessage.classList.remove('hidden');
+                inputCode.classList.add('border-red-500');
+                inputCode.focus();
+            }
+        });
+
+        btnBack.addEventListener('click', function() {
+            sectionForm.classList.add('hidden');
+            sectionLogin.classList.remove('hidden');
+            sectionLogin.classList.add('fade-in');
+            incidentForm.reset();
+            formError.classList.add('hidden');
+        });
+
+        incidentForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const docent = document.getElementById('docent').value.trim();
+            const aula = document.getElementById('aula').value.trim();
+            const sace = document.getElementById('sace').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const problema = document.getElementById('problema').value.trim();
+
+            const problemaLower = problema.toLowerCase();
+            if (problemaLower === "no funciona" || problemaLower === "no va" || problema.length < 10) {
+                formError.textContent = "Error: El problema descrit és massa curt. Cal explicar-lo millor.";
+                formError.classList.remove('hidden');
+                document.getElementById('problema').focus();
+                return;
+            }
+
+            formError.classList.add('hidden');
+            const destinatari = "revisiopreventiu@gmail.com";
+            const assumpte = `Incidència Informàtica - ${currentCenterName} (${currentCenterCode})`;
+            const cosCorreu = `S'ha registrat una nova incidència informàtica.
+
+DADES DEL CENTRE:
+------------------------------------------------------
+Centre: ${currentCenterName}
+Codi de Centre: ${currentCenterCode}
+
+DADES DE CONTACTE I UBICACIÓ:
+------------------------------------------------------
+Docent: ${docent}
+Aula: ${aula}
+SACE: ${sace}
+E-mail de contacte: ${email}
+
+DESCRIPCIÓ DEL PROBLEMA TROBAT:
+------------------------------------------------------
+${problema}
+
+------------------------------------------------------
+Enviat des de l'App d'Incidències (2026).`;
+
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${destinatari}&su=${encodeURIComponent(assumpte)}&body=${encodeURIComponent(cosCorreu)}`;
+            const mailtoLink = `mailto:${destinatari}?subject=${encodeURIComponent(assumpte)}&body=${encodeURIComponent(cosCorreu)}`;
+            
+            const newWindow = window.open(gmailUrl, '_blank');
+            if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+                window.location.href = mailtoLink;
+            }
+
+            setTimeout(() => {
+                alert("Processant l'enviament...");
+                incidentForm.reset();
+                sectionForm.classList.add('hidden');
+                sectionLogin.classList.remove('hidden');
+                inputCode.value = "";
+            }, 500);
+        });
+    </script>
+</body>
+</html>
